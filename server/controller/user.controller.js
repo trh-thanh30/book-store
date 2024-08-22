@@ -94,16 +94,22 @@ const logout = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const { id } = req.user;
+  const { username, email } = req.body;
   if (!id)
     return res.status(400).json({ message: "User not found", success: false });
   try {
-    const userUpdate = await User.findByIdAndUpdate(id, req.body, {
+    let userUpdate = { username, email };
+    if (req.file) {
+      userUpdate.profilePicture = req.file?.path;
+    }
+    const user = await User.findByIdAndUpdate(id, userUpdate, {
       new: true,
     });
     return res
       .status(200)
-      .json({ message: "User updated successfully", user: userUpdate });
+      .json({ message: "User updated successfully", user: user });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",

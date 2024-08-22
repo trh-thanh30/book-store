@@ -8,13 +8,14 @@ const {
   getAllUser,
 } = require("../controller/user.controller");
 const verifyToken = require("../middleware/verifyToken");
+const cloudinaryFileUploader = require("../utils/uploadImage");
 const router = express.Router();
 // POST
 router.post("/register", register);
 router.post("/login", login);
 router.post("/logout", logout);
 // PUT
-router.put("/update-user", verifyToken, updateUser);
+router.put("/update-user", verifyToken, cloudinaryFileUploader.single("profilePicture"), updateUser);
 // DELETE
 router.delete("/delete-user", verifyToken, deleteUser);
 // GET
