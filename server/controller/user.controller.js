@@ -145,9 +145,7 @@ const getAllUser = async (req, res) => {
     });
   }
 };
-const getUserById = async (req, res) => {
-  const { id } = req.user;
-};
+
 module.exports = {
   register,
   login,
