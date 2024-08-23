@@ -6,6 +6,7 @@ const {
   updateUser,
   deleteUser,
   getAllUser,
+  changePassword,
 } = require("../controller/user.controller");
 const verifyToken = require("../middleware/verifyToken");
 const cloudinaryFileUploader = require("../utils/uploadImage");
@@ -15,7 +16,13 @@ router.post("/register", register);
 router.post("/login", login);
 router.post("/logout", logout);
 // PUT
-router.put("/update-user", verifyToken, cloudinaryFileUploader.single("profilePicture"), updateUser);
+router.put(
+  "/update-user",
+  verifyToken,
+  cloudinaryFileUploader.single("profilePicture"),
+  updateUser
+);
+router.put("/refesh-paasword", verifyToken, changePassword);
 // DELETE
 router.delete("/delete-user", verifyToken, deleteUser);
 // GET

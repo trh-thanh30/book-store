@@ -152,6 +152,51 @@ const getAllUser = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+  // lay id cua user
+  const { id } = req.user;
+  // lay mat khau hien tai, mat khau moi, xac nhan mat khau moi
+  const { password, newPassword, confirmNewPassword } = req.body;
+  if (!password || !newPassword || !confirmNewPassword) {
+    return res
+      .status(400)
+      .json({ message: "Please provide all required fields", success: false });
+  }
+  if (newPassword !== confirmNewPassword) {
+    return res
+      .status(400)
+      .json({ message: "Passwords do not match", success: false });
+  }
+  if (!id)
+    return res.status(400).json({ message: "User not found", success: false });
+  try {
+    const user = await User.findById(id);
+    // so sanh mat khau hien tai voi mat khau cua user
+    const isMatch = bcryptjs.compareSync(password, user.password);
+    if (!isMatch)
+      return res
+        .status(401)
+        .json({ message: "Invalid credentials", success: false });
+    // thay doi mat khau
+    const hashedPassword = bcryptjs.hashSync(newPassword, 10);
+    const userUpdate = { password: hashedPassword };
+    // update mat khau
+    const userUpdatePassword = await User.findByIdAndUpdate(id, userUpdate, {
+      new: true,
+    });
+    const updateAt = new Date();
+    // tra ve mat khau thay doi thanh cong
+    return res
+      .status(200)
+      .json({ message: "Changed password successfully ", updateAt: updateAt });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -159,4 +204,5 @@ module.exports = {
   updateUser,
   deleteUser,
   getAllUser,
+  changePassword,
 };
