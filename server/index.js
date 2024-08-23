@@ -4,8 +4,8 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
-const userRoute = require("./routes/user.route")
-
+const userRoute = require("./routes/user.route");
+const categoriesRoute = require("./routes/categories.route");
 dotenv.config();
 
 const app = express();
@@ -29,6 +29,8 @@ mongoose
   .catch((err) => console.log(err));
 
 app.use("/api/user", userRoute);
+app.use("/api/categories", categoriesRoute);
+
 app.listen(PORT, () => {
   console.log("Server is running on port: " + PORT);
 });
