@@ -1,5 +1,6 @@
 const Book = require("../models/book.models");
 const Category = require("../models/categorie.models");
+const User = require("../models/user.models");
 
 const createBook = async (req, res) => {
   const { role } = req.user;
@@ -155,10 +156,53 @@ const getBookById = async (req, res) => {
     return res.status(500).json({ message: error.message, success: false });
   }
 };
+const addToWishList = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id)
+    return res.status(400).json({ message: "Book not found", success: false });
+  try {
+    const book = await Book.findById(id);
+    book.userWish = !book.userWish;
+    const saveBook = await book.save();
+    if (saveBook.userWish === true) {
+      await User.findByIdAndUpdate(req.user.id, {
+        $push: { bookWishList: saveBook._id },
+      });
+    } else {
+      await User.findByIdAndUpdate(req.user.id, {
+        $pull: { bookWishList: saveBook._id },
+      });
+    }
+    return res.status(200).json({
+      message: "Book updated successfully",
+      data: saveBook,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message, success: false });
+  }
+};
+const getUserWish = async (req, res) => {
+  const { id } = req.user; // Get the user ID from the authenticated user
+  try {
+    // Find the user by ID and populate the bookWishList with the Book documents
+    const user = await User.findById(id).populate("bookWishList");
+    // If the user doesn't have any books in the wishlist, return an empty array
+    const books = user.bookWishList || [];
+    return res
+      .status(200)
+      .json({ message: "Books fetched successfully", books });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: error.message, success: false });
+  }
+};
 module.exports = {
   createBook,
   getAllBook,
   deleteBook,
   updateBook,
   getBookById,
+  addToWishList,
+  getUserWish,
 };

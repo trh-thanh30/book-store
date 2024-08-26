@@ -7,6 +7,7 @@ const {
   deleteUser,
   getAllUser,
   changePassword,
+  wishList,
 } = require("../controller/user.controller");
 const verifyToken = require("../middleware/verifyToken");
 const cloudinaryFileUploader = require("../utils/uploadImage");
@@ -27,4 +28,5 @@ router.put("/refesh-paasword", verifyToken, changePassword);
 router.delete("/delete-user", verifyToken, deleteUser);
 // GET
 router.get("/get-users", verifyToken, getAllUser);
+router.get("/wish-list", verifyToken, wishList);
 module.exports = router;

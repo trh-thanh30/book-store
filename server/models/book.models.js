@@ -30,6 +30,10 @@ const bookSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    userWish: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

@@ -5,6 +5,8 @@ const {
   deleteBook,
   updateBook,
   getBookById,
+  addToWishList,
+  getUserWish,
 } = require("../controller/book.controller");
 const verifyToken = require("../middleware/verifyToken");
 const cloudinaryFileUploader = require("../utils/uploadImage");
@@ -20,6 +22,7 @@ router.post(
 
 // GET
 router.get("/get-all", getAllBook);
+router.get("/get-wish-list", verifyToken, getUserWish);
 router.get("/:id", getBookById);
 
 // DELETE
@@ -32,4 +35,5 @@ router.put(
   cloudinaryFileUploader.single("image"),
   updateBook
 );
+router.put("/add-to-wish-list/:id", verifyToken, addToWishList);
 module.exports = router;
