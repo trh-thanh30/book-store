@@ -85,10 +85,37 @@ const deleteBook = async (req, res) => {
 };
 const getAllBook = async (req, res) => {
   try {
-    const books = await Book.find();
-    return res
-      .status(200)
-      .json({ message: "Books fetched successfully", books });
+    let { page, limit, search } = req.query;
+    page = parseInt(page) || 1;
+    limit = parseInt(limit) || 10;
+    const skip = (page - 1) * limit;
+    let query = {};
+    if (search) {
+      query = {
+        $or: [
+          { title: { $regex: search, $options: "i" } },
+          { author: { $regex: search, $options: "i" } },
+          { category: { $regex: search, $options: "i" } },
+        ],
+      };
+    }
+    const count = await Book.countDocuments(query);
+    const books = await Book.find(query)
+      .skip(skip)
+      .limit(limit)
+      .populate("category");
+    return res.status(200).json({
+      message: "Books fetched successfully",
+      data: {
+        books: books,
+        pagination: {
+          currentPage: page,
+          totalPages: Math.ceil(count / limit),
+          totalItems: count,
+          pageSize: limit,
+        },
+      },
+    });
   } catch (error) {
     return res
       .status(404)
@@ -107,13 +134,9 @@ const updateBook = async (req, res) => {
       return res.status(404).json({ message: "Not found", success: false });
     let updateBook = { title, description, author, category };
     if (req.file) updateBook.image = req.file?.path;
-    const data = await Book.findByIdAndUpdate(
-      id,
-      updateBook,
-      {
-        new: true,
-      }
-    );
+    const data = await Book.findByIdAndUpdate(id, updateBook, {
+      new: true,
+    });
     return res.status(200).json({ message: "Book updated successfully", data });
   } catch (error) {
     return res.status(500).json({ message: error.message, success: false });
