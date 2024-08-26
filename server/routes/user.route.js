@@ -28,5 +28,5 @@ router.put("/refesh-paasword", verifyToken, changePassword);
 router.delete("/delete-user", verifyToken, deleteUser);
 // GET
 router.get("/get-users", verifyToken, getAllUser);
-router.get("/wish-list", verifyToken, wishList);
+
 module.exports = router;

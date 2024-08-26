@@ -185,13 +185,42 @@ const addToWishList = async (req, res) => {
 const getUserWish = async (req, res) => {
   const { id } = req.user; // Get the user ID from the authenticated user
   try {
+    let { limit, page, search } = req.query;
+    const skip = (page - 1) * limit;
+    limit = parseInt(limit) || 10;
+    page = parseInt(page) || 1;
+    let query = {};
+    if (search) {
+      query = {
+        $or: [
+          { title: { $regex: search, $options: "i" } },
+          { author: { $regex: search, $options: "i" } },
+          { category: { $regex: search, $options: "i" } },
+        ],
+      };
+    }
+    const count = await User.countDocuments(query);
+
     // Find the user by ID and populate the bookWishList with the Book documents
-    const user = await User.findById(id).populate("bookWishList");
+    const user = await User.findById(id)
+      .populate("bookWishList")
+      .skip(skip)
+      .limit(limit);
     // If the user doesn't have any books in the wishlist, return an empty array
     const books = user.bookWishList || [];
-    return res
-      .status(200)
-      .json({ message: "Books fetched successfully", books });
+
+    return res.status(200).json({
+      message: "Books fetched successfully",
+      data: {
+        data: books,
+        pagination: {
+          currentPage: page,
+          totalPages: Math.ceil(count / limit),
+          totalItems: books.length,
+          pageSize: limit,
+        },
+      },
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: error.message, success: false });
