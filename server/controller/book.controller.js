@@ -95,4 +95,47 @@ const getAllBook = async (req, res) => {
       .json({ message: "Something went wrong", success: false });
   }
 };
-module.exports = { createBook, getAllBook };
+const updateBook = async (req, res) => {
+  const { role } = req.user;
+  if (role !== "admin")
+    return res.status(404).json({ message: "Not found", success: false });
+  const { id } = req.params;
+  const { title, description, author, category } = req.body;
+  try {
+    const book = await Book.findById(id);
+    if (!book)
+      return res.status(404).json({ message: "Not found", success: false });
+    let updateBook = { title, description, author, category };
+    if (req.file) updateBook.image = req.file?.path;
+    const data = await Book.findByIdAndUpdate(
+      id,
+      updateBook,
+      {
+        new: true,
+      }
+    );
+    return res.status(200).json({ message: "Book updated successfully", data });
+  } catch (error) {
+    return res.status(500).json({ message: error.message, success: false });
+  }
+};
+const getBookById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const book = await Book.findById(id);
+    if (!book)
+      return res
+        .status(404)
+        .json({ message: "Book not found", success: false });
+    return res.status(200).json({ message: "Book fetched successfully", book });
+  } catch (error) {
+    return res.status(500).json({ message: error.message, success: false });
+  }
+};
+module.exports = {
+  createBook,
+  getAllBook,
+  deleteBook,
+  updateBook,
+  getBookById,
+};

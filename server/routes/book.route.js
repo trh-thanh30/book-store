@@ -1,5 +1,11 @@
 const express = require("express");
-const { createBook, getAllBook } = require("../controller/book.controller");
+const {
+  createBook,
+  getAllBook,
+  deleteBook,
+  updateBook,
+  getBookById,
+} = require("../controller/book.controller");
 const verifyToken = require("../middleware/verifyToken");
 const cloudinaryFileUploader = require("../utils/uploadImage");
 const router = express.Router();
@@ -14,4 +20,16 @@ router.post(
 
 // GET
 router.get("/get-all", getAllBook);
+router.get("/:id", getBookById);
+
+// DELETE
+router.delete("/delete/:id", verifyToken, deleteBook);
+
+// PUT
+router.put(
+  "/update/:id",
+  verifyToken,
+  cloudinaryFileUploader.single("image"),
+  updateBook
+);
 module.exports = router;
