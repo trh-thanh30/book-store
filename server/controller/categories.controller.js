@@ -1,3 +1,4 @@
+const Book = require("../models/book.models");
 const Category = require("../models/categorie.models");
 
 const createCategory = async (req, res) => {
@@ -39,4 +40,55 @@ const getAllCategory = async (req, res) => {
     return res.status(404).json({ message: error.message, success: false });
   }
 };
-module.exports = { createCategory, getAllCategory };
+const updateCategories = async (req, res) => {
+  const { role } = req.user;
+  const { id } = req.params;
+  const { name } = req.body;
+  if (!id)
+    return res.status(404).json({ message: "Not found", success: false });
+  if (role !== "admin")
+    return res.status(404).json({ message: "Not found", success: false });
+  try {
+    // old categories
+    const oldCategory = await Category.findById(id);
+    if (!oldCategory)
+      return res.status(404).json({ message: "Not found", success: false });
+    // update categories
+    const updateCategory = await Category.findByIdAndUpdate(
+      id,
+      { name },
+      {
+        new: true,
+      }
+    );
+    // update categroeis of books
+    await Book.updateMany({ category: oldCategory.name }, { category: name });
+    return res
+      .status(200)
+      .json({ message: "Category updated successfully", updateCategory });
+  } catch (error) {
+    return res.status(404).json({ message: error.message, success: false });
+  }
+};
+const deleteCategories = async (req, res) => {
+  const { role } = req.user;
+  const { id } = req.params;
+  if (role !== "admin")
+    return res.status(404).json({ message: "Not found", success: false });
+  try {
+    const deleteCategory = await Category.findByIdAndDelete(id);
+    if (!deleteCategory)
+      return res.status(404).json({ message: "Not found", success: false });
+    return res
+      .status(200)
+      .json({ message: "Category deleted successfully", deleteCategory });
+  } catch (error) {
+    return res.status(500).json({ message: error.message, success: false });
+  }
+};
+module.exports = {
+  createCategory,
+  getAllCategory,
+  updateCategories,
+  deleteCategories,
+};
