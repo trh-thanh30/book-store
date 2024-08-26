@@ -13,8 +13,15 @@ const createCategory = async (req, res) => {
     return res
       .status(400)
       .json({ message: "Name is required", success: false });
+
+  const categoryExists = await Category.findOne({ name });
+  if (categoryExists)
+    return res
+      .status(400)
+      .json({ message: "Category already exists", success: false });
   try {
-    const newCategory = new Category({ name });
+   
+    const newCategory = new Category({ name, createBy: req.user.id });
     await newCategory.save();
     return res
       .status(200)
