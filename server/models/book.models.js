@@ -23,8 +23,7 @@ const bookSchema = new mongoose.Schema(
       required: true,
     },
     category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
+      type: String,
       required: true,
     },
     createBy: {

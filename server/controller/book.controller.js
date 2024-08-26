@@ -37,6 +37,7 @@ const createBook = async (req, res) => {
     : defaultImage);
   try {
     const categoryDoc = await Category.findOne({ name: category });
+    console.log(categoryDoc);
     if (!categoryDoc)
       return res
         .status(400)
@@ -46,7 +47,7 @@ const createBook = async (req, res) => {
       description,
       image: uploadImage,
       author,
-      category: categoryDoc._id,
+      category: categoryDoc.name,
       createBy: req.user.id,
     });
     await newBook.save();

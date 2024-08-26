@@ -20,7 +20,6 @@ const createCategory = async (req, res) => {
       .status(400)
       .json({ message: "Category already exists", success: false });
   try {
-   
     const newCategory = new Category({ name, createBy: req.user.id });
     await newCategory.save();
     return res
@@ -30,4 +29,14 @@ const createCategory = async (req, res) => {
     return res.status(500).json({ message: error.message, success: false });
   }
 };
-module.exports = { createCategory };
+const getAllCategory = async (req, res) => {
+  try {
+    const categories = await Category.find();
+    return res
+      .status(200)
+      .json({ message: "Categories fetched successfully", categories });
+  } catch (error) {
+    return res.status(404).json({ message: error.message, success: false });
+  }
+};
+module.exports = { createCategory, getAllCategory };
