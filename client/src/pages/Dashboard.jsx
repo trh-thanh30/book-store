@@ -1,5 +1,32 @@
+import { useLocation } from "react-router-dom";
+import DashSideBar from "../components/Dash/DashSideBar";
+import { useEffect, useState } from "react";
+
 export default function Dashboard() {
+  const loaction = useLocation();
+  const [tab, setTab] = useState("");
+  useEffect(() => {
+    const urlParams = new URLSearchParams(loaction.search);
+    const tabFormUrl = urlParams.get("tab");
+    if (tabFormUrl) {
+      setTab(tabFormUrl);
+    }
+  }, [loaction.search]);
   return (
-    <div>Dashboard</div>
-  )
+    <>
+      <div className="flex flex-col min-h-screen md:flex-row">
+        <div className="md:w-56">
+          {/* SideBar */}
+          <DashSideBar></DashSideBar>
+        </div>
+
+        {/* Content */}
+        {tab === "dash" && <div className="flex-1 p-4">Content</div>}
+        {tab === "books" && <div className="flex-1 p-4">Content</div>}
+        {tab === "categories" && <div className="flex-1 p-4">Content</div>}
+        {tab === "users" && <div className="flex-1 p-4">Content</div>}
+        {tab === "task-categories" && <div className="flex-1 p-4">Content</div>}
+      </div>
+    </>
+  );
 }
