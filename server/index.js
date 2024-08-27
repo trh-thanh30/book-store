@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const userRoute = require("./routes/user.route");
 const categoriesRoute = require("./routes/categories.route");
 const bookRoute = require("./routes/book.route");
+const contactRoute = require("./routes/contact.route");
 dotenv.config();
 
 const app = express();
@@ -32,6 +33,7 @@ mongoose
 app.use("/api/user", userRoute);
 app.use("/api/categories", categoriesRoute);
 app.use("/api/books", bookRoute);
+app.use("/api/contacts", contactRoute);
 
 app.listen(PORT, () => {
   console.log("Server is running on port: " + PORT);

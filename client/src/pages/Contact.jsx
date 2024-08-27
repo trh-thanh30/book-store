@@ -14,7 +14,7 @@ export default function Contact() {
         </div>
         <div className="flex items-center justify-center mt-14">
           <div className="flex items-center gap-6">
-            <div className="flex flex-col flex-1 gap-16 p-4 border border-black border-solid rounded-md">
+            <div className="flex flex-col flex-1 gap-16 p-4 border border-solid rounded-lg border-slate-300">
               <div className="flex flex-col gap-1">
                 <h2 className="text-2xl font-bold">Contact Information</h2>
                 <p className="text-sm text-slate-500">
@@ -38,14 +38,14 @@ export default function Contact() {
                   </span>
                 </div>
               </div>
-              <div className="flex items-center gap-6">
-                <div className="p-1 transition-all border border-solid rounded-full cursor-pointer border-slate-500 hover:bg-black hover:text-white">
+              <div className="flex items-center gap-6 text-slate-500">
+                <div className="p-1 transition-all border border-solid rounded-full cursor-pointer border-slate-500 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-500">
                   <FaTwitter></FaTwitter>
                 </div>
-                <div className="p-1 transition-all border border-solid rounded-full cursor-pointer border-slate-500 hover:bg-black hover:text-white">
+                <div className="p-1 transition-all border border-solid rounded-full cursor-pointer border-slate-500 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-500">
                   <FaInstagram></FaInstagram>
                 </div>
-                <div className="p-1 transition-all border border-solid rounded-full cursor-pointer border-slate-500 hover:bg-black hover:text-white">
+                <div className="p-1 transition-all border border-solid rounded-full cursor-pointer border-slate-500 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-500">
                   <FaFacebook></FaFacebook>
                 </div>
               </div>
