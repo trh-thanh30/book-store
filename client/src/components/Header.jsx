@@ -1,16 +1,40 @@
-import { Avatar, Button, Dropdown, Navbar } from "flowbite-react";
+import { Avatar, Button, Dropdown, Navbar, Spinner } from "flowbite-react";
 import Logo from "./Logo";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Search from "./Search";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { CiLogout } from "react-icons/ci";
 import { useState } from "react";
 import ProfileModal from "../modal/ProfileModal";
+import ChangePasswordModal from "../modal/ChangePasswordModal";
+import { signOut } from "../redux/user/userSlice";
 export default function Header() {
   const path = useLocation().pathname;
   const { currentUser } = useSelector((state) => state.user);
   const [openModalProfile, setOpenModalProfile] = useState(false);
   const [openModalChangPassword, setOpenModalChangPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  // log out
+  const handleLogOut = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("http://localhost:3000/api/user/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await res.json();
+      setLoading(false);
+      if (res.ok) {
+        console.log(data);
+        dispatch(signOut());
+        navigate("/sign-in");
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   return (
     <>
       <header className="bg-white border-b border-solid shadow-md border-slate-200">
@@ -81,9 +105,21 @@ export default function Header() {
                   Change Password
                 </Dropdown.Item>
                 <Dropdown.Divider />
-                <div className="flex items-center w-full gap-2 px-3 py-2 text-sm text-gray-700 transition-all cursor-pointer hover:bg-red-50 hover:text-red-500">
-                  <CiLogout />
-                  <span>Log Out</span>
+                <div
+                  onClick={handleLogOut}
+                  className="flex items-center w-full gap-2 px-3 py-2 text-sm text-gray-700 transition-all cursor-pointer hover:bg-red-50 hover:text-red-500"
+                >
+                  {loading ? (
+                    <>
+                      <Spinner size="sm"></Spinner>
+                      <span>Loading ...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CiLogout />
+                      <span>Log Out</span>
+                    </>
+                  )}
                 </div>
               </Dropdown>
             ) : (
@@ -100,6 +136,10 @@ export default function Header() {
         openModalProfile={openModalProfile}
         setOpenModalProfile={setOpenModalProfile}
       ></ProfileModal>
+      <ChangePasswordModal
+        openModalChangPassword={openModalChangPassword}
+        setOpenModalChangPassword={setOpenModalChangPassword}
+      ></ChangePasswordModal>
     </>
   );
 }
