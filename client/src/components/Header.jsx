@@ -4,9 +4,13 @@ import { Link, useLocation } from "react-router-dom";
 import Search from "./Search";
 import { useSelector } from "react-redux";
 import { CiLogout } from "react-icons/ci";
+import { useState } from "react";
+import ProfileModal from "../modal/ProfileModal";
 export default function Header() {
   const path = useLocation().pathname;
   const { currentUser } = useSelector((state) => state.user);
+  const [openModalProfile, setOpenModalProfile] = useState(false);
+  const [openModalChangPassword, setOpenModalChangPassword] = useState(false);
   return (
     <>
       <header className="bg-white border-b border-solid shadow-md border-slate-200">
@@ -70,8 +74,12 @@ export default function Header() {
                     {currentUser.email}
                   </span>
                 </Dropdown.Header>
-                <Dropdown.Item>Profile</Dropdown.Item>
-                <Dropdown.Item>Change Password</Dropdown.Item>
+                <Dropdown.Item onClick={() => setOpenModalProfile(true)}>
+                  Profile
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => setOpenModalChangPassword(true)}>
+                  Change Password
+                </Dropdown.Item>
                 <Dropdown.Divider />
                 <div className="flex items-center w-full gap-2 px-3 py-2 text-sm text-gray-700 transition-all cursor-pointer hover:bg-red-50 hover:text-red-500">
                   <CiLogout />
@@ -88,6 +96,10 @@ export default function Header() {
           </div>
         </Navbar>
       </header>
+      <ProfileModal
+        openModalProfile={openModalProfile}
+        setOpenModalProfile={setOpenModalProfile}
+      ></ProfileModal>
     </>
   );
 }

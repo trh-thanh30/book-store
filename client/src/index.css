@@ -91,3 +91,18 @@ video {
   vertical-align: baseline;
   font-family: "Poppins", sans-serif;
 }
+
+.modal-fade-in {
+  animation: fadeIn 0.45s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

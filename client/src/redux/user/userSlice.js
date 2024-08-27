@@ -3,6 +3,7 @@ const initialState = {
   currentUser: null,
   error: null,
   loading: false,
+  success: null,
 };
 const userSlice = createSlice({
   name: "user",
@@ -38,6 +39,7 @@ const userSlice = createSlice({
     updateUserFailure: (state, action) => {
       state.loading = false;
       state.error = action.payload;
+      state.currentUser = null;
     },
     deleteUserStart: (state) => {
       state.loading = true;

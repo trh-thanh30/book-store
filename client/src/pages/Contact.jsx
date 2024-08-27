@@ -22,16 +22,18 @@ export default function Contact() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify(formData),
         }
       );
       const data = await res.json();
-      setLoading(true);
+      setLoading(false);
       if (!res.ok) setError(data.message);
+
       if (res.ok) {
         setFormData({});
         setError(null);
-        setSuccess(data.message);
+        setSuccess("Message sent successfully");
       }
     } catch (error) {
       setError(error.message);
