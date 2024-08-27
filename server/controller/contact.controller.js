@@ -29,10 +29,52 @@ const contact = async (req, res) => {
     await newContact.save();
     return res.status(200).json({
       message: "Contact created successfully",
+      success: true,
     });
   } catch (error) {
     return res.status(500).json({ message: error.message, success: false });
   }
 };
+const getContacts = async (req, res) => {
+  const { role } = req.user;
+  if (role !== "admin")
+    return res.status(403).json({
+      message: "Unauthorized to access this resource",
+      success: false,
+    });
+  try {
+    let { page, limit, search } = req.query;
+    page = parseInt(page) || 1;
+    limit = parseInt(limit) || 10;
+    const skip = (page - 1) * limit;
+    let query = {};
+    if (search) {
+      query = {
+        $or: [
+          { username: { $regex: search, $options: "i" } },
+          { email: { $regex: search, $options: "i" } },
+          { phone: { $regex: search, $options: "i" } },
+          { message: { $regex: search, $options: "i" } },
+        ],
+      };
+    }
+    const count = await Contact.countDocuments(query);
+    const getContact = await Contact.find({}).skip(skip).limit(limit);
+    return res.status(200).json({
+      data: {
+        contacts: getContact,
+        pagination: {
+          currentPage: page,
+          totalPages: Math.ceil(count / limit),
+          totalItems: count,
+          pageSize: limit,
+        },
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: error.message, success: false });
+  }
+};
 
-module.exports = { contact };
+module.exports = { contact, getContacts };

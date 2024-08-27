@@ -134,16 +134,30 @@ const deleteUser = async (req, res) => {
 };
 const getAllUser = async (req, res) => {
   const { role } = req.user;
+  if (role !== "admin")
+    return res.status(403).json({
+      message: "Unauthorized to access this resource",
+      success: false,
+    });
   try {
-    if (role !== "admin")
-      return res.status(403).json({
-        message: "Unauthorized to access this resource",
-        success: false,
-      });
-    const users = await User.find({});
-    return res
-      .status(200)
-      .json({ message: "Users fetched successfully", users });
+    let { page, limit } = req.query;
+    page = parseInt(page) || 1;
+    limit = parseInt(limit) || 10;
+    const skip = (page - 1) * limit;
+    const users = await User.find({}).skip(skip).limit(limit);
+    const total = await User.countDocuments(users.length);
+    return res.status(200).json({
+      message: "Users fetched successfully",
+      data: {
+        users: users,
+        pagination: {
+          currentPage: page,
+          totalPages: Math.ceil(total / limit),
+          totalItems: total,
+          pageSize: limit,
+        },
+      },
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,

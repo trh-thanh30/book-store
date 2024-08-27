@@ -1,8 +1,43 @@
-import { Button, FloatingLabel } from "flowbite-react";
+import { Alert, Button, FloatingLabel, Spinner } from "flowbite-react";
 import { FaPhone, FaTwitter, FaInstagram, FaFacebook } from "react-icons/fa";
 import { CgMail } from "react-icons/cg";
 import { MdLocationPin } from "react-icons/md";
+import { useState } from "react";
 export default function Contact() {
+  const [formData, setFormData] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const onChanges = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      setError(null);
+      setSuccess(null);
+      const res = await fetch(
+        "http://localhost:3000/api/contacts/user-contact",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
+      const data = await res.json();
+      setLoading(true);
+      if (!res.ok) setError(data.message);
+      if (res.ok) {
+        setFormData({});
+        setError(null);
+        setSuccess(data.message);
+      }
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
   return (
     <>
       <div className="h-screen">
@@ -51,13 +86,50 @@ export default function Contact() {
               </div>
             </div>
             <div className="flex-1">
-              <form className="flex flex-col gap-3" action="">
-                <FloatingLabel variant="standard" label="Username" />
-                <FloatingLabel variant="standard" label="Email" />
-                <FloatingLabel variant="standard" label="Phone Number" />
-                <FloatingLabel variant="standard" label="Message" />
-                <Button gradientDuoTone={"purpleToBlue"} outline>
-                  Send Message
+              <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
+                <FloatingLabel
+                  id="username"
+                  onChange={onChanges}
+                  variant="standard"
+                  label="Username"
+                />
+                <FloatingLabel
+                  id="email"
+                  onChange={onChanges}
+                  variant="standard"
+                  label="Email"
+                />
+                <FloatingLabel
+                  id="phone"
+                  onChange={onChanges}
+                  variant="standard"
+                  label="Phone Number"
+                />
+                <FloatingLabel
+                  id="message"
+                  onChange={onChanges}
+                  variant="standard"
+                  label="Message"
+                />
+                {error && (
+                  <Alert color="failure" onDismiss={() => setError(null)}>
+                    {error}
+                  </Alert>
+                )}
+                {success && (
+                  <Alert color={"success"} onDismiss={() => setSuccess(null)}>
+                    {success}
+                  </Alert>
+                )}
+                <Button type="submit" gradientDuoTone={"purpleToBlue"} outline>
+                  {loading ? (
+                    <div className="flex items-center gap-1">
+                      <Spinner size="sm"></Spinner>
+                      <span>Loading ...</span>
+                    </div>
+                  ) : (
+                    <span>Send Message</span>
+                  )}
                 </Button>
               </form>
             </div>

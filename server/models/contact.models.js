@@ -21,6 +21,10 @@ const contactSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    contactByAdmin: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
