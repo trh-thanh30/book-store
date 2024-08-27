@@ -1,18 +1,24 @@
 /* eslint-disable react/prop-types */
 import { Alert, Button, Label, Modal, Spinner } from "flowbite-react";
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   updateUserStart,
   updateUserSuccess,
   updateUserFailure,
+  deleteUserFailure,
+  deleteUserSuccess,
 } from "../redux/user/userSlice";
+import Swal from "sweetalert2";
 
 export default function ProfileModal({
   openModalProfile,
   setOpenModalProfile,
 }) {
   const { currentUser, loading, error } = useSelector((state) => state.user);
+  console.log(currentUser);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [success, setSuccess] = useState(false);
   const [formData, setFormData] = useState({
@@ -69,7 +75,49 @@ export default function ProfileModal({
     }
   };
 
-  const alertDeleteAccount = () => {};
+  const alertDeleteAccount = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your file has been deleted.",
+          icon: "success",
+        });
+
+        // call api
+        const handleDelete = async () => {
+          try {
+            const res = await fetch(
+              `http://localhost:3000/api/user/delete-user/${currentUser._id}`,
+              {
+                method: "DELETE",
+                credentials: "include",
+              }
+            );
+
+            const data = await res.json();
+            if (!res.ok) {
+              dispatch(deleteUserFailure(data.message));
+            } else {
+              dispatch(deleteUserSuccess(data));
+              navigate("/sign-in");
+            }
+          } catch (error) {
+            dispatch(deleteUserFailure(error.message));
+          }
+        };
+        handleDelete();
+      }
+    });
+  };
 
   return (
     <Modal
@@ -133,7 +181,7 @@ export default function ProfileModal({
             <Modal.Footer className="flex items-center justify-between pb-0 border-t border-solid border-t-slate-200">
               <p
                 onClick={alertDeleteAccount}
-                className="text-red-500 cursor-pointer"
+                className="text-sm text-red-500 cursor-pointer"
               >
                 Delete Account
               </p>

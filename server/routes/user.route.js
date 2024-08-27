@@ -25,7 +25,7 @@ router.put(
 );
 router.put("/refesh-paasword", verifyToken, changePassword);
 // DELETE
-router.delete("/delete-user", verifyToken, deleteUser);
+router.delete("/delete-user/:id", verifyToken, deleteUser);
 // GET
 router.get("/get-users", verifyToken, getAllUser);
 
