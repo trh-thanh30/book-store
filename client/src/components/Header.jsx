@@ -104,6 +104,12 @@ export default function Header() {
                 <Dropdown.Item onClick={() => setOpenModalChangPassword(true)}>
                   Change Password
                 </Dropdown.Item>
+                {currentUser.role === "admin" && (
+                  <Dropdown.Item>
+                    <Link to="/dashboard">Dashboard</Link>
+                  </Dropdown.Item>
+                )}
+                <Dropdown.Item>Wish List</Dropdown.Item>
                 <Dropdown.Divider />
                 <div
                   onClick={handleLogOut}

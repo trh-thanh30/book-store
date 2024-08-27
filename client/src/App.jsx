@@ -7,6 +7,8 @@ import SignUp from "./pages/SignUp";
 import Contact from "./pages/Contact";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import Dashboard from "./pages/Dashboard";
+import IsAdminPrivateRoute from "./components/IsAdminPrivateRoute";
 function Layout({ children }) {
   return (
     <>
@@ -44,6 +46,16 @@ export default function App() {
             </Layout>
           }
         />
+        <Route element={<IsAdminPrivateRoute />}>
+          <Route
+            path="/dashboard"
+            element={
+              <Layout>
+                <Dashboard />
+              </Layout>
+            }
+          />
+        </Route>
 
         {/* Routes without Header and Footer */}
         <Route path="/sign-in" element={<SignIn />} />
