@@ -1,12 +1,13 @@
 /* eslint-disable react/prop-types */
-import { Button, Label, Modal, Select } from "flowbite-react";
+import { Alert, Button, Label, Modal, Select, Spinner } from "flowbite-react";
 import { useEffect, useState } from "react";
 
-export default function AddBooksModal({ openModal, setOpenmodal }) {
+export default function AddBooksModal({ openModal, setOpenmodal, fetchBooks }) {
   const [categories, setCategories] = useState([]);
   const [previewImages, setPreviewImages] = useState([]); // Lưu nhiều ảnh
   const [formData, setFormData] = useState({});
-
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const onChanges = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
@@ -20,14 +21,12 @@ export default function AddBooksModal({ openModal, setOpenmodal }) {
         imagesArray.push(reader.result);
         if (imagesArray.length === files.length) {
           setPreviewImages(imagesArray); // Cập nhật mảng previewImages
-          setFormData({ ...formData, images: files }); // Cập nhật formData với nhiều file
+          setFormData({ ...formData, image: files }); // Cập nhật formData với nhiều file
         }
       };
       reader.readAsDataURL(file);
     });
   };
-
-  console.log(formData);
 
   const fetchCategory = async () => {
     try {
@@ -38,7 +37,7 @@ export default function AddBooksModal({ openModal, setOpenmodal }) {
       const data = await res.json();
       setCategories(data.categories);
     } catch (error) {
-      console.log(error.message);
+      setError(error.message);
     }
   };
 
@@ -46,6 +45,39 @@ export default function AddBooksModal({ openModal, setOpenmodal }) {
     fetchCategory();
   }, []);
 
+  // handle upload books
+  const handeSubmit = async (e) => {
+    e.preventDefault();
+    const sendFormData = new FormData();
+    sendFormData.append("title", formData.title);
+    sendFormData.append("author", formData.author);
+    sendFormData.append("description", formData.description);
+    sendFormData.append("category", formData.category);
+    formData?.image?.forEach((image) => {
+      console.log(image);
+      sendFormData.append(`image`, image);
+    });
+    try {
+      setLoading(true);
+      const res = await fetch("http://localhost:3000/api/books/create", {
+        method: "POST",
+        credentials: "include",
+        body: sendFormData,
+      });
+      const data = await res.json();
+      setLoading(false);
+
+      if (!res.ok) {
+        setError(data.message);
+      } else {
+        setFormData({});
+        setOpenmodal(false);
+        fetchBooks();
+      }
+    } catch (error) {
+      setError(error.message);
+    }
+  };
   return (
     <>
       <Modal show={openModal} onClose={() => setOpenmodal(false)}>
@@ -54,7 +86,7 @@ export default function AddBooksModal({ openModal, setOpenmodal }) {
         </Modal.Header>
         <Modal.Body>
           <div className="space-y-6">
-            <form className="flex flex-col gap-6">
+            <form onSubmit={handeSubmit} className="flex flex-col gap-6">
               <div className="flex flex-col gap-1">
                 <Label
                   className="cursor-pointer"
@@ -121,7 +153,7 @@ export default function AddBooksModal({ openModal, setOpenmodal }) {
                       key={index}
                       src={image}
                       alt={`Preview ${index + 1}`}
-                      className="w-20 h-20 rounded"
+                      className="object-cover w-20 h-20 mt-1 rounded"
                     />
                   ))}
                 </div>
@@ -139,6 +171,11 @@ export default function AddBooksModal({ openModal, setOpenmodal }) {
                   className="h-40 text-sm transition-all border border-gray-300 rounded-md text-slate-500 focus:border-blue-50"
                 ></textarea>
               </div>
+              {error && (
+                <Alert color={"failure"} onDismiss={() => setError(null)}>
+                  {error}
+                </Alert>
+              )}
               <Modal.Footer className="flex items-center justify-between pb-0 border-t border-solid border-t-slate-200">
                 <div className="flex items-center justify-end w-full gap-2">
                   <Button
@@ -146,7 +183,14 @@ export default function AddBooksModal({ openModal, setOpenmodal }) {
                     outline
                     type="submit"
                   >
-                    Save
+                    {loading ? (
+                      <div className="flex items-center gap-1">
+                        <Spinner color="info" size="sm" />
+                        <span>Loading ...</span>
+                      </div>
+                    ) : (
+                      "Save"
+                    )}
                   </Button>
                   <Button color="gray" onClick={() => setOpenmodal(false)}>
                     Cancel

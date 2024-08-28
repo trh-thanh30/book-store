@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
 import AddBooksModal from "../../modal/AddBooksModal";
+import Swal from "sweetalert2";
 
 export default function Books() {
   const [books, setBooks] = useState([]);
@@ -25,6 +26,45 @@ export default function Books() {
   useEffect(() => {
     fetchBooks();
   }, []);
+
+  // Delete Books
+  const handleDeleteBook = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will no longer be able to access or find this book",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your book has been deleted.",
+          icon: "success",
+        });
+      }
+      // call api
+
+      const handleDelete = async () => {
+        const res = await fetch(
+          `http://localhost:3000/api/books/delete/${id}`,
+          {
+            method: "DELETE",
+            credentials: "include",
+          }
+        );
+        const data = await res.json();
+        if (!res.ok) {
+          console.log(data.message);
+        } else {
+          fetchBooks();
+        }
+      };
+      handleDelete();
+    });
+  };
 
   return (
     <>
@@ -82,7 +122,10 @@ export default function Books() {
                       <Link className="font-medium text-blue-600 hover:underline">
                         <Table.Cell>Edit</Table.Cell>
                       </Link>
-                      <Table.Cell className="font-medium text-red-600 cursor-pointer hover:underline">
+                      <Table.Cell
+                        onClick={() => handleDeleteBook(books._id)}
+                        className="font-medium text-red-600 cursor-pointer hover:underline"
+                      >
                         Delete
                       </Table.Cell>
                     </Table.Row>
@@ -96,6 +139,7 @@ export default function Books() {
       <AddBooksModal
         openModal={openModal}
         setOpenmodal={setOpenmodal}
+        fetchBooks={fetchBooks}
       ></AddBooksModal>
     </>
   );

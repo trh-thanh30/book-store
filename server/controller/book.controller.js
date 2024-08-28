@@ -12,15 +12,15 @@ const createBook = async (req, res) => {
       message: "Unauthorized to access this resource",
       success: false,
     });
-  if (!title)
+  if (!title || title.trim() === "")
     return res
       .status(400)
       .json({ message: "Title is required", success: false });
-  if (!description)
+  if (!description && description.trim() === "")
     return res
       .status(403)
       .json({ message: "Description is required", success: false });
-  if (!author)
+  if (!author && author.trim() === "")
     return res
       .status(403)
       .json({ message: "Author is required", success: false });
@@ -33,7 +33,10 @@ const createBook = async (req, res) => {
     return res
       .status(400)
       .json({ message: "Title already exists", success: false });
-  const images = req.files.map((file) => file.path) || defaultImage;
+  const images =
+    req.files && req.files.length > 0
+      ? req.files.map((file) => file.path)
+      : [defaultImage];
   try {
     const categoryDoc = await Category.findOne({ name: category });
     console.log(categoryDoc);

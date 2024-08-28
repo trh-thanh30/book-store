@@ -17,7 +17,6 @@ export default function ProfileModal({
   setOpenModalProfile,
 }) {
   const { currentUser, loading, error } = useSelector((state) => state.user);
-  console.log(currentUser);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [success, setSuccess] = useState(false);
