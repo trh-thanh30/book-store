@@ -1,6 +1,7 @@
 import { useLocation } from "react-router-dom";
 import DashSideBar from "../components/Dash/DashSideBar";
 import { useEffect, useState } from "react";
+import Books from "../components/Dash/Books";
 
 export default function Dashboard() {
   const loaction = useLocation();
@@ -22,7 +23,7 @@ export default function Dashboard() {
 
         {/* Content */}
         {tab === "dash" && <div className="flex-1 p-4">Content</div>}
-        {tab === "books" && <div className="flex-1 p-4">Content</div>}
+        {tab === "books" && <Books>Content</Books>}
         {tab === "categories" && <div className="flex-1 p-4">Content</div>}
         {tab === "users" && <div className="flex-1 p-4">Content</div>}
         {tab === "task-categories" && <div className="flex-1 p-4">Content</div>}

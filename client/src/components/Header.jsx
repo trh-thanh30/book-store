@@ -105,11 +105,14 @@ export default function Header() {
                   Change Password
                 </Dropdown.Item>
                 {currentUser.role === "admin" && (
-                  <Dropdown.Item>
-                    <Link to="/dashboard">Dashboard</Link>
-                  </Dropdown.Item>
+                  <Link to="/dashboard">
+                    <Dropdown.Item>Dashboard</Dropdown.Item>
+                  </Link>
                 )}
-                <Dropdown.Item>Wish List</Dropdown.Item>
+                <Link to="/wish-list">
+                  <Dropdown.Item>Wish List</Dropdown.Item>
+                </Link>
+
                 <Dropdown.Divider />
                 <div
                   onClick={handleLogOut}

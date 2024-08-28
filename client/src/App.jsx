@@ -9,6 +9,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Dashboard from "./pages/Dashboard";
 import IsAdminPrivateRoute from "./components/IsAdminPrivateRoute";
+import WishList from "./pages/WishList";
 function Layout({ children }) {
   return (
     <>
@@ -43,6 +44,14 @@ export default function App() {
           element={
             <Layout>
               <Contact />
+            </Layout>
+          }
+        />
+        <Route
+          path="/wish-list"
+          element={
+            <Layout>
+              <WishList />
             </Layout>
           }
         />
