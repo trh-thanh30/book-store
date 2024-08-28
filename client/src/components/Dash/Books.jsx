@@ -25,7 +25,7 @@ export default function Books() {
   useEffect(() => {
     fetchBooks();
   }, []);
-  console.log(books);
+
   return (
     <>
       <div className="w-full p-3 overflow-x-auto">

@@ -6,7 +6,7 @@ const createBook = async (req, res) => {
   const { role } = req.user;
   const defaultImage =
     "https://img.freepik.com/free-vector/hand-drawn-flat-design-stack-books-illustration_23-2149341898.jpg?size=338&ext=jpg&ga=GA1.1.2008272138.1724025600&semt=ais_hybrid";
-  const { title, description, author, category } = req.body;
+  const { title, description, author, category, image } = req.body;
   if (role !== "admin")
     return res.status(403).json({
       message: "Unauthorized to access this resource",
@@ -33,9 +33,7 @@ const createBook = async (req, res) => {
     return res
       .status(400)
       .json({ message: "Title already exists", success: false });
-  const uploadImage = (req.body.image = req.file
-    ? req.file?.path
-    : defaultImage);
+  const images = req.files.map((file) => file.path) || defaultImage;
   try {
     const categoryDoc = await Category.findOne({ name: category });
     console.log(categoryDoc);
@@ -46,7 +44,7 @@ const createBook = async (req, res) => {
     const newBook = new Book({
       title,
       description,
-      image: uploadImage,
+      image: images,
       author,
       category: categoryDoc.name,
       createBy: req.user.id,

@@ -16,7 +16,7 @@ const router = express.Router();
 router.post(
   "/create",
   verifyToken,
-  cloudinaryFileUploader.single("image"),
+  cloudinaryFileUploader.array("image", 5),
   createBook
 );
 
