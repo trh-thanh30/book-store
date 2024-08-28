@@ -10,7 +10,7 @@ export default function UpdateBookModal({
   loadingUpdate,
 }) {
   console.log(book);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({});
   const onChanges = (e) => {
