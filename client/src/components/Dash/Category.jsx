@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { Spinner, Table } from "flowbite-react";
 import { useEffect, useState } from "react";
 import AddCategoriesModal from "../../modal/AddCategoriesModal";
+import Swal from "sweetalert2";
 
 export default function Category() {
   const [category, setCategory] = useState([]);
@@ -26,7 +27,46 @@ export default function Category() {
   useEffect(() => {
     getCategory();
   }, []);
-  console.log(category);
+
+  const handleDeleteCategory = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will no longer be able to access or find this category",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your book has been deleted.",
+          icon: "success",
+        });
+      }
+      // call api
+      const deleteCategory = async () => {
+        try {
+          const res = await fetch(
+            `http://localhost:3000/api/categories/delete/${id}`,
+            {
+              method: "DELETE",
+              credentials: "include",
+            }
+          );
+          if (res.ok) {
+            getCategory();
+          } else {
+            console.log("Something went wrong");
+          }
+        } catch (error) {
+          console.log(error.message);
+        }
+      };
+      deleteCategory();
+    });
+  };
   return (
     <>
       <div className="w-full p-3 overflow-x-auto">
@@ -75,7 +115,10 @@ export default function Category() {
                       <Table.Cell className="font-medium text-blue-600 cursor-pointer hover:underline">
                         Edit
                       </Table.Cell>
-                      <Table.Cell className="font-medium text-red-600 cursor-pointer hover:underline">
+                      <Table.Cell
+                        onClick={() => handleDeleteCategory(category._id)}
+                        className="font-medium text-red-600 cursor-pointer hover:underline"
+                      >
                         Delete
                       </Table.Cell>
                     </Table.Row>
