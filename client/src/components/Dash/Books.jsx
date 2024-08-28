@@ -1,14 +1,18 @@
 import { Spinner, Table } from "flowbite-react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import dayjs from "dayjs";
 import AddBooksModal from "../../modal/AddBooksModal";
 import Swal from "sweetalert2";
+import UpdateBookModal from "../../modal/UpdateBookModal";
 
 export default function Books() {
   const [books, setBooks] = useState([]);
   const [openModal, setOpenmodal] = useState(false);
+  const [openModalUpdate, setOpenmodalUpdate] = useState(false);
+  const [book, setBook] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingUpdate, setLoadingUpdate] = useState(true);
+  const [categories, setCategories] = useState([]);
   const fetchBooks = async () => {
     try {
       setLoading(true);
@@ -66,6 +70,44 @@ export default function Books() {
     });
   };
 
+  const fetchCategory = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/api/categories/get-all", {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = await res.json();
+      setCategories(data.categories);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  useEffect(() => {
+    fetchCategory();
+  }, []);
+
+  const getBook = async (id) => {
+    try {
+      setLoadingUpdate(true);
+      const res = await fetch(`http://localhost:3000/api/books/${id}`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await res.json();
+      setLoadingUpdate(false);
+      if (res.ok) {
+        setBook(data.book);
+      } else {
+        console.log(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <div className="w-full p-3 overflow-x-auto">
@@ -99,7 +141,7 @@ export default function Books() {
                   <Table.HeadCell>Edit</Table.HeadCell>
                   <Table.HeadCell>Delete</Table.HeadCell>
                 </Table.Head>
-                <Table.Body className="divide-y">
+                <Table.Body className="divide-y text-nowrap">
                   {books.map((books) => (
                     <Table.Row key={books._id} className="bg-white">
                       <Table.Cell>
@@ -119,9 +161,17 @@ export default function Books() {
                       </Table.Cell>
                       <Table.Cell>{books.category}</Table.Cell>
                       <Table.Cell>{books.author}</Table.Cell>
-                      <Link className="font-medium text-blue-600 hover:underline">
-                        <Table.Cell>Edit</Table.Cell>
-                      </Link>
+
+                      <Table.Cell
+                        onClick={() => {
+                          setOpenmodalUpdate(true);
+                          getBook(books._id);
+                        }}
+                        className="font-medium text-blue-600 cursor-pointer hover:underline"
+                      >
+                        Edit
+                      </Table.Cell>
+
                       <Table.Cell
                         onClick={() => handleDeleteBook(books._id)}
                         className="font-medium text-red-600 cursor-pointer hover:underline"
@@ -140,7 +190,16 @@ export default function Books() {
         openModal={openModal}
         setOpenmodal={setOpenmodal}
         fetchBooks={fetchBooks}
+        categories={categories}
       ></AddBooksModal>
+      <UpdateBookModal
+        openModalUpdate={openModalUpdate}
+        setOpenmodalUpdate={setOpenmodalUpdate}
+        categories={categories}
+        book={book}
+        fetchBooks={fetchBooks}
+        loadingUpdate={loadingUpdate}
+      ></UpdateBookModal>
     </>
   );
 }

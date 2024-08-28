@@ -1,9 +1,13 @@
 /* eslint-disable react/prop-types */
 import { Alert, Button, Label, Modal, Select, Spinner } from "flowbite-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-export default function AddBooksModal({ openModal, setOpenmodal, fetchBooks }) {
-  const [categories, setCategories] = useState([]);
+export default function AddBooksModal({
+  openModal,
+  setOpenmodal,
+  fetchBooks,
+  categories,
+}) {
   const [previewImages, setPreviewImages] = useState([]); // Lưu nhiều ảnh
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
@@ -27,23 +31,6 @@ export default function AddBooksModal({ openModal, setOpenmodal, fetchBooks }) {
       reader.readAsDataURL(file);
     });
   };
-
-  const fetchCategory = async () => {
-    try {
-      const res = await fetch("http://localhost:3000/api/categories/get-all", {
-        method: "GET",
-        credentials: "include",
-      });
-      const data = await res.json();
-      setCategories(data.categories);
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-
-  useEffect(() => {
-    fetchCategory();
-  }, []);
 
   // handle upload books
   const handeSubmit = async (e) => {
