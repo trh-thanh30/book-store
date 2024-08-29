@@ -3,6 +3,7 @@ import DashSideBar from "../components/Dash/DashSideBar";
 import { useEffect, useState } from "react";
 import Books from "../components/Dash/Books";
 import Category from "../components/Dash/Category";
+import User from "../components/Dash/User";
 
 export default function Dashboard() {
   const loaction = useLocation();
@@ -26,8 +27,7 @@ export default function Dashboard() {
         {tab === "dash" && <div className="flex-1 p-4">Content</div>}
         {tab === "books" && <Books></Books>}
         {tab === "categories" && <Category></Category>}
-        {tab === "users" && <div className="flex-1 p-4">Content</div>}
-        {tab === "task-categories" && <div className="flex-1 p-4">Content</div>}
+        {tab === "users" && <User></User>}
       </div>
     </>
   );

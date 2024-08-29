@@ -115,7 +115,7 @@ const updateUser = async (req, res) => {
   }
 };
 const deleteUser = async (req, res) => {
-  const { id } = req.user;
+  const { id } = req.params;
   if (!id)
     return res.status(400).json({ message: "User not found", success: false });
   try {
