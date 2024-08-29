@@ -132,7 +132,7 @@ export default function Books() {
               </div>
             ) : (
               <Table hoverable>
-                <Table.Head className="font-semibold text-slate-500">
+                <Table.Head className="font-semibold text-slate-500 text-nowrap">
                   <Table.HeadCell>Date Updated</Table.HeadCell>
                   <Table.HeadCell>Books image</Table.HeadCell>
                   <Table.HeadCell>Books Title</Table.HeadCell>

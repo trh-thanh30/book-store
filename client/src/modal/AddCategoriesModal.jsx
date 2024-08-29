@@ -73,7 +73,7 @@ export default function AddCategoriesModal({
                       <span>Loading ...</span>
                     </div>
                   ) : (
-                    "Update"
+                    "Save"
                   )}
                 </Button>
                 <Button

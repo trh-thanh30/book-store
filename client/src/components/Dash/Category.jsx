@@ -3,11 +3,15 @@ import { Spinner, Table } from "flowbite-react";
 import { useEffect, useState } from "react";
 import AddCategoriesModal from "../../modal/AddCategoriesModal";
 import Swal from "sweetalert2";
+import UpdateCategoryModal from "../../modal/UpdateCategoryModal";
 
 export default function Category() {
   const [category, setCategory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingCategory, setLoadingCategory] = useState(true);
+  const [categoryId, setCategoryId] = useState([]);
   const [openCategoryModal, setOpenCategoryModal] = useState(false);
+  const [openCategoryUpdateModal, setOpenCategoryUpdateModal] = useState(false);
 
   const getCategory = async () => {
     try {
@@ -67,6 +71,24 @@ export default function Category() {
       deleteCategory();
     });
   };
+  const getCategoryId = async (id) => {
+    try {
+      setLoadingCategory(true);
+      const res = await fetch(
+        `http://localhost:3000/api/categories/get/${id}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+      const data = await res.json();
+      setLoadingCategory(false);
+      setCategoryId(data);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   return (
     <>
       <div className="w-full p-3 overflow-x-auto">
@@ -112,7 +134,13 @@ export default function Category() {
                       <Table.Cell className="font-medium text-gray-900 whitespace-nowrap ">
                         {category.name}
                       </Table.Cell>
-                      <Table.Cell className="font-medium text-blue-600 cursor-pointer hover:underline">
+                      <Table.Cell
+                        onClick={() => {
+                          setOpenCategoryUpdateModal(true);
+                          getCategoryId(category._id);
+                        }}
+                        className="font-medium text-blue-600 cursor-pointer hover:underline"
+                      >
                         Edit
                       </Table.Cell>
                       <Table.Cell
@@ -134,6 +162,13 @@ export default function Category() {
         setOpenCategoryModal={setOpenCategoryModal}
         getCategory={getCategory}
       ></AddCategoriesModal>
+      <UpdateCategoryModal
+        openCategoryUpdateModal={openCategoryUpdateModal}
+        setOpenCategoryUpdateModal={setOpenCategoryUpdateModal}
+        getCategory={getCategory}
+        categoryId={categoryId}
+        loadingCategory={loadingCategory}
+      ></UpdateCategoryModal>
     </>
   );
 }
